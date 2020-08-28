@@ -35,9 +35,125 @@ http://127.0.0.1:8000
 | PUT | /api/v1/vendors/{vendor_id} | application/x-www-form-urlencoded | application/json | Edit vendor |
 | DELETE | /api/v1/vendors/{vendor_id} | * | application/json | Delete vendor |
 
-#### C.3 Request & Response
+#### C.2.1 Request & Response
 
-##### I. Show All Vendors
+##### I. Add New Vendor
+---
+**Request**
+```
+curl -X POST -H 'Accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -i 'http://127.0.0.1:8000/api/v1/vendors/' --data 'name=TAS%20Restaurant&logo=https%3A%2F%2Florempixel.com%2F640%2F480%2Ffood%2Fternama%2F%3F32430'
+```
+**Response**
+```
+{
+    "message":"New restaurant has been saved"
+}
+```
+
+##### II. Edit Vendor
+---
+**Request**
+```
+curl -X PUT -H 'Accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -i 'http://127.0.0.1:8000/api/v1/vendors/51' --data 'name=TAS%20Restaurant%20Baru&logo=https%3A%2F%2Florempixel.com%2F640%2F480%2Ffood%2Fternama%2F%3F32430'
+```
+**Response**
+```
+{
+    "message":"Restaurant has been updated"
+}
+```
+
+##### III. Delete Vendor
+---
+**Request**
+```
+curl -X DELETE -H 'Accept: application/json' -i 'http://127.0.0.1:8000/api/v1/vendors/51'
+```
+**Response**
+```
+{
+    "message":"Restaurant has been deleted"
+}
+```
+
+##### IV. Show Specific Vendor
+---
+**Request**
+```
+curl -X GET -H 'Accept: application/json' -i 'http://127.0.0.1:8000/api/v1/vendors/1'
+```
+**Response**
+```
+{
+    "status": "success",
+    "data": [
+        {
+            "id": 1,
+            "name": "Spinka, Langworth and Kuphal",
+            "logo": "https://lorempixel.com/640/480/food/?11507",
+            "tags": [
+                {
+                    "id": 13,
+                    "name": "affordable"
+                },
+                {
+                    "id": 4,
+                    "name": "indonesian"
+                },
+                {
+                    "id": 3,
+                    "name": "korean"
+                },
+                {
+                    "id": 6,
+                    "name": "halal"
+                },
+                {
+                    "id": 8,
+                    "name": "dinner"
+                },
+                {
+                    "id": 9,
+                    "name": "breakfast"
+                },
+                {
+                    "id": 7,
+                    "name": "lunch"
+                },
+                {
+                    "id": 10,
+                    "name": "fish"
+                }
+            ],
+            "dishes": []
+        }
+    ],
+    "error": null
+}
+```
+
+##### V. Show Vendor Dishes
+---
+**Request**
+```
+curl -X GET -H 'Accept: application/json' -i 'http://127.0.0.1:8000/api/v1/vendors/5' --data 'http://127.0.0.1:8000/api/v1/vendors/1/dishes'
+```
+**Response**
+```
+{
+    "status": "success",
+    "data": [
+        {
+            "id": 10,
+            "name": "Pasta",
+            "price": 63138
+        }
+    ],
+    "error": null
+}
+```
+
+##### VI. Show All Vendors
 ---
 **Request**
 ```
@@ -689,7 +805,7 @@ curl -X GET -H 'Accept: application/json' -i 'http://127.0.0.1:8000/api/v1/vendo
 ```
 
 
-##### II. Show All Vendors with Filter
+##### VII. Show All Vendors with Filter
 ---
 **Request**
 ```
@@ -1024,11 +1140,50 @@ curl -X GET -H 'Accept: application/json' -i 'http://127.0.0.1:8000/api/v1/vendo
 }
 ```
 
-##### III. Show Specific Vendor
+
+
+#### C.3 Order
+
+| Method | Endpoint | Content-Type | Accept | Description |
+| ------ | ------ | ------ | ------ | ------ |
+| POST | /api/v1/orders/ | application/json | application/json | Make new order |
+| GET | /api/v1/orders{order_id} | * | application/json | Show specific order include **Order Items** |
+
+#### C.3.1 Request & Response
+
+##### I. Make new Order
 ---
 **Request**
 ```
-curl -X GET -H 'Accept: application/json' -i 'http://127.0.0.1:8000/api/v1/vendors/1'
+curl -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' -i 'http://127.0.0.1:8000/api/v1/orders' --data '{
+    "user_id": 1,
+    "vendor_id": 48,
+    "items": [
+        {
+            "dish_id": 43,
+            "quantity": 3,
+            "note": "Additional 3 ketchup"
+        },
+        {
+            "dish_id": 44,
+            "quantity": 3,
+            "note": "Additional 3 cream"
+        }
+    ]
+}'
+```
+**Response**
+```
+{
+    "message":"Order has been received"
+}
+```
+
+##### II. Show specific Order
+---
+**Request**
+```
+curl -X GET -H 'Accept: application/json' -i 'http://127.0.0.1:8000/api/v1/orders/2'
 ```
 **Response**
 ```
@@ -1036,119 +1191,35 @@ curl -X GET -H 'Accept: application/json' -i 'http://127.0.0.1:8000/api/v1/vendo
     "status": "success",
     "data": [
         {
-            "id": 1,
-            "name": "Spinka, Langworth and Kuphal",
-            "logo": "https://lorempixel.com/640/480/food/?11507",
-            "tags": [
+            "id": 2,
+            "user_id": 1,
+            "vendor_id": 48,
+            "items": [
                 {
-                    "id": 13,
-                    "name": "affordable"
+                    "id": 3,
+                    "dish": {
+                        "id": 43,
+                        "name": "Sayur Asam"
+                    },
+                    "dish_price": 78339,
+                    "quantity": 3,
+                    "total": 235017,
+                    "note": "Additional 3 ketchup"
                 },
                 {
                     "id": 4,
-                    "name": "indonesian"
-                },
-                {
-                    "id": 3,
-                    "name": "korean"
-                },
-                {
-                    "id": 6,
-                    "name": "halal"
-                },
-                {
-                    "id": 8,
-                    "name": "dinner"
-                },
-                {
-                    "id": 9,
-                    "name": "breakfast"
-                },
-                {
-                    "id": 7,
-                    "name": "lunch"
-                },
-                {
-                    "id": 10,
-                    "name": "fish"
+                    "dish": {
+                        "id": 44,
+                        "name": "Kwetiau Rebus"
+                    },
+                    "dish_price": 57306,
+                    "quantity": 3,
+                    "total": 171918,
+                    "note": "Additional 3 cream"
                 }
-            ],
-            "dishes": []
+            ]
         }
     ],
     "error": null
 }
 ```
-
-##### IV. Show Vendor Dishes
----
-**Request**
-```
-curl -X GET -H 'Accept: application/json' -i 'http://127.0.0.1:8000/api/v1/vendors/5' --data 'http://127.0.0.1:8000/api/v1/vendors/1/dishes'
-```
-**Response**
-```
-{
-    "status": "success",
-    "data": [
-        {
-            "id": 10,
-            "name": "Pasta",
-            "price": 63138
-        }
-    ],
-    "error": null
-}
-```
-
-##### V. Add New Vendor
----
-**Request**
-```
-curl -X POST -H 'Accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -i 'http://127.0.0.1:8000/api/v1/vendors/' --data 'name=TAS%20Restaurant&logo=https%3A%2F%2Florempixel.com%2F640%2F480%2Ffood%2Fternama%2F%3F32430'
-```
-**Response**
-```
-{
-    "message":"New restaurant has been saved"
-}
-```
-
-##### VI. Edit Vendor
----
-**Request**
-```
-curl -X PUT -H 'Accept: application/json' -H 'Content-Type: application/x-www-form-urlencoded' -i 'http://127.0.0.1:8000/api/v1/vendors/51' --data 'name=TAS%20Restaurant%20Baru&logo=https%3A%2F%2Florempixel.com%2F640%2F480%2Ffood%2Fternama%2F%3F32430'
-```
-**Response**
-```
-{
-    "message":"Restaurant has been updated"
-}
-```
-
-##### VII. Delete Vendor
----
-**Request**
-```
-curl -X DELETE -H 'Accept: application/json' -i 'http://127.0.0.1:8000/api/v1/vendors/51'
-```
-**Response**
-```
-{
-    "message":"Restaurant has been deleted"
-}
-```
-#### C.3 Order
-
-| Method | Endpoint | Description |
-| ------ | ------ | ------ |
-| GET | /api/v1/orders{order_id} | Show specific order include **Order Items** |
-| POST | /api/v1/orders/ | Make new order |
-
-| GitHub | [plugins/github/README.md][PlGh] |
-| Google Drive | [plugins/googledrive/README.md][PlGd] |
-| OneDrive | [plugins/onedrive/README.md][PlOd] |
-| Medium | [plugins/medium/README.md][PlMe] |
-| Google Analytics | [plugins/googleanalytics/README.md][PlGa] |
-
